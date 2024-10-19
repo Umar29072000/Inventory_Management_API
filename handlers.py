@@ -1,3 +1,4 @@
+import re
 import json
 from http.server import BaseHTTPRequestHandler
 from models import Category, Item
@@ -18,6 +19,16 @@ class MyHandler(BaseHTTPRequestHandler):
             categories = Category.get_all()
             self._set_response()
             self.wfile.write(json.dumps(categories).encode())
+
+        elif re.match(r"^/items/\d+$", self.path):
+            item_id = int(self.path.split('/')[-1])
+            item = Item.get_by_id(item_id)
+            if item:
+                self._set_response()
+                self.wfile.write(json.dumps(item).encode())
+            else:
+                self._set_response(404)
+                self.wfile.write(json.dumps({"error": "Item not found"}).encode())
 
         elif self.path == "/items":
             items = Item.get_all()
