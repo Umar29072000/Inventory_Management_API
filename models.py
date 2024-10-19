@@ -34,6 +34,19 @@ class Item:
             return cursor.fetchall()
 
     @staticmethod
+    def get_by_id(item_id):
+        """Mengambil item berdasarkan ID."""
+        with get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                SELECT Item.*, Category.name as category_name
+                FROM Item
+                JOIN Category ON Item.category_id = Category.id
+                WHERE Item.id = ?
+            """, (item_id,))
+            return cursor.fetchone()
+
+    @staticmethod
     def add(category_id, name, description, price):
         with get_connection() as conn:
             cursor = conn.cursor()
