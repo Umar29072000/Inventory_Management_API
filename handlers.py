@@ -5,14 +5,22 @@ from models import Category, Item
 
 class MyHandler(BaseHTTPRequestHandler):
     def _set_response(self, status=200, content_type="application/json"):
+        """Mengatur response header termasuk CORS."""
         self.send_response(status)
         self.send_header('Content-Type', content_type)
-        self.send_header('Connection', 'close')
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+        self.send_header('Access-Control-Allow-Headers', 'Content-Type')
         self.end_headers()
 
     def _parse_request_body(self):
+        """Parse body JSON dari request."""
         length = int(self.headers.get('Content-Length'))
         return json.loads(self.rfile.read(length))
+
+    def do_OPTIONS(self):
+        """Menangani preflight request untuk CORS."""
+        self._set_response(204)
 
     def do_GET(self):
         if self.path == "/categories":
