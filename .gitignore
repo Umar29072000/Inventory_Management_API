@@ -1,54 +1,46 @@
-# Python bytecode cache
+# Bytecode Python dan file cache
 __pycache__/
 *.py[cod]
-*$py.class
+$py.class
 
-# SQLite database
+# Database SQLite
 inventory.db
 *.sqlite3
 
-# Virtual environments
+# Virtual Environment
 venv/
-.env/
-.venv/
 env/
+.venv/
+.env/
 
-# Logs and temp files
+# Log dan file sementara
 *.log
 *.tmp
 *.pid
-*.swp
-*.swo
 
 # Docker artifacts
-*.log
-docker-compose.override.yml
 .dockerignore
+docker-compose.override.yml
 
-# Editor/IDE configurations
-.idea/
+# Konfigurasi editor/IDE
 .vscode/
+.idea/
 *.iml
 
-# Python build artifacts
+# Build dan distribusi Python
 build/
 dist/
 *.egg-info/
 .eggs/
 
-# Coverage reports and testing artifacts
+# Testing dan Coverage
 htmlcov/
 .tox/
-.cache/
+.nox/
 coverage.xml
+.cache/
 *.cover
 
-# Profiling data
-.prof
-*.prof
-
-# OS-specific files
+# File sistem OS (macOS atau Windows)
 .DS_Store
-
-# Jupyter checkpoints (optional)
-.ipynb_checkpoints/
+Thumbs.db
