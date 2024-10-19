@@ -15,7 +15,9 @@ class MyHandler(BaseHTTPRequestHandler):
 
     def _parse_request_body(self):
         """Parse body JSON dari request."""
-        length = int(self.headers.get('Content-Length'))
+        length = int(self.headers.get('Content-Length', 0))
+        if length == 0:
+            raise ValueError("Empty request body")
         return json.loads(self.rfile.read(length))
 
     def do_OPTIONS(self):
@@ -64,11 +66,20 @@ class MyHandler(BaseHTTPRequestHandler):
         except KeyError as e:
             self._set_response(400)
             self.wfile.write(json.dumps({"error": f"Missing required field: {str(e)}"}).encode())
+        except ValueError as e:
+            self._set_response(400)
+            self.wfile.write(json.dumps({"error": str(e)}).encode())
 
     def do_PUT(self):
         try:
             item_id = int(self.path.split('/')[-1])
             data = self._parse_request_body()
+
+            if not Item.get_by_id(item_id):
+                self._set_response(404)
+                self.wfile.write(json.dumps({"error": "Item not found"}).encode())
+                return
+
             Item.update(item_id, data["name"], data.get("description", ""), data["price"])
             self._set_response(200)
             self.wfile.write(json.dumps({"message": "Item updated"}).encode())
@@ -80,6 +91,12 @@ class MyHandler(BaseHTTPRequestHandler):
     def do_DELETE(self):
         try:
             item_id = int(self.path.split('/')[-1])
+
+            if not Item.get_by_id(item_id):
+                self._set_response(404)
+                self.wfile.write(json.dumps({"error": "Item not found"}).encode())
+                return
+
             Item.delete(item_id)
             self._set_response(200)
             self.wfile.write(json.dumps({"message": "Item deleted"}).encode())
