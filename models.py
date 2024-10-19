@@ -3,6 +3,7 @@ import sqlite3
 DB_NAME = "inventory.db"
 
 def get_connection():
+    """Membuka koneksi ke database SQLite."""
     return sqlite3.connect(DB_NAME)
 
 class Category:
@@ -40,4 +41,22 @@ class Item:
                 INSERT INTO Item (category_id, name, description, price)
                 VALUES (?, ?, ?, ?)
             """, (category_id, name, description, price))
+            conn.commit()
+
+    @staticmethod
+    def update(item_id, name, description, price):
+        with get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                UPDATE Item
+                SET name = ?, description = ?, price = ?
+                WHERE id = ?
+            """, (name, description, price, item_id))
+            conn.commit()
+
+    @staticmethod
+    def delete(item_id):
+        with get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("DELETE FROM Item WHERE id = ?", (item_id,))
             conn.commit()
