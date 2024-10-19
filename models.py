@@ -1,0 +1,43 @@
+import sqlite3
+
+DB_NAME = "inventory.db"
+
+def get_connection():
+    return sqlite3.connect(DB_NAME)
+
+class Category:
+    @staticmethod
+    def get_all():
+        with get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM Category")
+            return cursor.fetchall()
+
+    @staticmethod
+    def add(name):
+        with get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("INSERT INTO Category (name) VALUES (?)", (name,))
+            conn.commit()
+
+class Item:
+    @staticmethod
+    def get_all():
+        with get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                SELECT Item.*, Category.name as category_name
+                FROM Item
+                JOIN Category ON Item.category_id = Category.id
+            """)
+            return cursor.fetchall()
+
+    @staticmethod
+    def add(category_id, name, description, price):
+        with get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                INSERT INTO Item (category_id, name, description, price)
+                VALUES (?, ?, ?, ?)
+            """, (category_id, name, description, price))
+            conn.commit()
