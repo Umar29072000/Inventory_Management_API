@@ -1,0 +1,54 @@
+# Python bytecode cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# SQLite database
+inventory.db
+*.sqlite3
+
+# Virtual environments
+venv/
+.env/
+.venv/
+env/
+
+# Logs and temp files
+*.log
+*.tmp
+*.pid
+*.swp
+*.swo
+
+# Docker artifacts
+*.log
+docker-compose.override.yml
+.dockerignore
+
+# Editor/IDE configurations
+.idea/
+.vscode/
+*.iml
+
+# Python build artifacts
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Coverage reports and testing artifacts
+htmlcov/
+.tox/
+.cache/
+coverage.xml
+*.cover
+
+# Profiling data
+.prof
+*.prof
+
+# OS-specific files
+.DS_Store
+
+# Jupyter checkpoints (optional)
+.ipynb_checkpoints/
