@@ -5,7 +5,8 @@ from models import Category, Item
 class MyHandler(BaseHTTPRequestHandler):
     def _set_response(self, status=200, content_type="application/json"):
         self.send_response(status)
-        self.send_header('Content-type', content_type)
+        self.send_header('Content-Type', content_type)
+        self.send_header('Connection', 'close')
         self.end_headers()
 
     def _parse_request_body(self):
@@ -18,7 +19,7 @@ class MyHandler(BaseHTTPRequestHandler):
             self._set_response()
             self.wfile.write(json.dumps(categories).encode())
 
-        elif self.path.startswith("/items"):
+        elif self.path == "/items":
             items = Item.get_all()
             self._set_response()
             self.wfile.write(json.dumps(items).encode())
@@ -49,22 +50,7 @@ class MyHandler(BaseHTTPRequestHandler):
         try:
             item_id = int(self.path.split('/')[-1])
             data = self._parse_request_body()
-
-            with Item.get_connection() as conn:
-                cursor = conn.cursor()
-                cursor.execute("SELECT * FROM Item WHERE id = ?", (item_id,))
-                if cursor.fetchone() is None:
-                    self._set_response(404)
-                    self.wfile.write(json.dumps({"error": "Item not found"}).encode())
-                    return
-
-                cursor.execute("""
-                    UPDATE Item
-                    SET name = ?, description = ?, price = ?
-                    WHERE id = ?
-                """, (data["name"], data.get("description", ""), data["price"], item_id))
-                conn.commit()
-
+            Item.update(item_id, data["name"], data.get("description", ""), data["price"])
             self._set_response(200)
             self.wfile.write(json.dumps({"message": "Item updated"}).encode())
 
@@ -75,18 +61,7 @@ class MyHandler(BaseHTTPRequestHandler):
     def do_DELETE(self):
         try:
             item_id = int(self.path.split('/')[-1])
-
-            with Item.get_connection() as conn:
-                cursor = conn.cursor()
-                cursor.execute("SELECT * FROM Item WHERE id = ?", (item_id,))
-                if cursor.fetchone() is None:
-                    self._set_response(404)
-                    self.wfile.write(json.dumps({"error": "Item not found"}).encode())
-                    return
-
-                cursor.execute("DELETE FROM Item WHERE id = ?", (item_id,))
-                conn.commit()
-
+            Item.delete(item_id)
             self._set_response(200)
             self.wfile.write(json.dumps({"message": "Item deleted"}).encode())
 
